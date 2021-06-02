@@ -1,0 +1,41 @@
+---
+title: "R4ds Exercises"
+author: "Darin Stephenson"
+date: "6/1/2021"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+
+```{r setup, include=FALSE}
+require("knitr")
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir=normalizePath("..")) #set working directory to the project directory
+library(conflicted)
+library(tidyverse)
+conflict_prefer("select", "dplyr")
+conflict_prefer("lag", "dplyr")
+conflict_prefer("filter", "dplyr")
+```
+
+This document is intended to help our group learn
+R using the book <em>R for Data Science</em>. We can interact with R in
+at least 3 distinct ways: through the console, through R scripts, and through
+R Markdown documents like this one. The value of R Markdown is that you
+can intersperse text and R code (and many other things) in the same
+document, and then you can run the code directly in the document. It is 
+also easy to produce a pdf or html output directly from an R Markdown
+file using knitr.
+
+Here is a block of R code as given in Subsection 3.2.2 of the online
+version of R for Data Science.
+
+```{r basic_plot,echo=TRUE}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy))
+```
+
+Continue below to learn about data visualization from Chapter 3 of R for
+Data Science.
