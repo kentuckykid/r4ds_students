@@ -1,0 +1,25 @@
+---
+title: "R4ds Exercises"
+author: "Darin Stephenson"
+date: "6/1/2021"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+
+```{r setup, include=FALSE}
+require("knitr")
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir=normalizePath("..")) #set working directory to the project directory
+library(conflicted)
+library(tidyverse)
+library(nycflights13)
+conflict_prefer("select", "dplyr")
+conflict_prefer("lag", "dplyr")
+conflict_prefer("filter", "dplyr")
+```
+
+
+
