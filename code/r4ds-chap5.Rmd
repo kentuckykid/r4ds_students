@@ -21,5 +21,115 @@ conflict_prefer("lag", "dplyr")
 conflict_prefer("filter", "dplyr")
 ```
 
+```{r 5.1, practice}
+jan1
+```
+
+```{r 5.1, practice}
+filter(flights, !(arr_delay > 120 | dep_delay > 120))
+filter(flights, arr_delay <= 120, dep_delay <= 120)
+
+```
+
+```{r 5.1, practice}
+df <- tibble(x = c(1, NA, 3))
+filter(df, x > 1)
+#> # A tibble: 1 x 1
+#>       x
+#>   <dbl>
+#> 1     3
+filter(df, is.na(x) | x > 1)
+#> # A tibble: 2 x 1
+#>       x
+#>   <dbl>
+#> 1    NA
+#> 2     3
+```
+
+```{r 5.2.4, practice}
+filter(flights, arr_delay >= 120)
+```
+
+```{r 5.2.4, practice}
+filter(flights, dest == "HOU")
+```
+
+```{r 5.2.4, practice}
+filter(flights, carrier == "DL" | carrier == "AA" | carrier == "UA")
+```
+
+```{r 5.2.4, practice}
+filter(flights, month == 7 | month == 8 | month == 9)
+```
+
+```{r 5.2.4, practice}
+filter(flights, arr_delay > 120 & dep_delay <= 0)
+```
+
+```{r 5.2.4, practice}
+filter(flights, dep_delay >= 60 & (dep_delay - arr_delay) > 30)
+```
+
+```{r 5.2.4, practice}
+filter(flights, between(dep_time, 0, 600))
+```
+
+```{r 5.2.4 no.3, practice}
+filter(flights, is.na(dep_time))
+#This represents flights that were scheduled to depart but were canceled
+```
+
+```{r 5.2.4, practice}
+filter(flights, month == 7 | month == 8 | month == 9)
+```
+
+```{r 5.3, practice}
+arrange(flights, !is.na(flights)) #Exercise 1
+```
+
+```{r 5.3, practice}
+arrange(flights, desc(dep_delay))
+```
+
+```{r 5.3, practice}
+arrange(flights, dep_time) #Exercise 2
+```
+
+```{r 5.3, practice}
+arrange(flights, desc(distance/air_time)) #Exercise 3
+```
+
+```{r 5.3, practice}
+arrange(flights, desc(distance))
+arrange(flights, distance) #Exercise 4
+```
 
 
+```{r 5.4, practice}
+select(flights, year, month, day,year) #Exercise 2
+```
+
+```{r 5.4, practice}
+select(flights, year, month, day,year) #Exercise 2
+```
+
+
+```{r 5.5, practice}
+transmute(flights,
+  dep_time,
+  minute = dep_time%%100 + (dep_time%/%100*60)) #Exercise 1
+```
+
+```{r 5.5, practice}
+mutate(flights, 
+air_time = arr_time-dep_time
+)
+```
+
+```{r 5.5, practice}
+transmute(flights, dep_time, air_time,
+  air_time = case_when(
+  (arr_time - dep_time) < 0 ~ ((24-dep_time) + arr_time),
+  TRUE ~  (arr_time - dep_time))
+) #IDK
+```
