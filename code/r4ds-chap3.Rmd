@@ -40,3 +40,46 @@ ggplot(data = mpg) +
 Continue below to learn about data visualization from Chapter 3 of R for
 Data Science. Create your own branch of the r4ds_students repository and
 push changes on your branch to GitHub regularly (at least each day).
+
+Section 3.7
+
+```{r}
+ggplot(data = diamonds) + 
+  stat_summary(
+    mapping = aes(x = cut, y = depth),
+    fun.min = min,
+    fun.max = max,
+    fun = median
+  )
+```
+
+```{r}
+ggplot(data = diamonds)+
+  geom_pointrange(
+    mapping = aes(x = cut, y = depth),
+    fun = median,
+    fun.min = min,
+    fun.max = max,
+    stat = "summary"
+  )
+```
+
+```{r}
+demo <- tribble(
+  ~cut,         ~freq,
+  "Fair",       1610,
+  "Good",       4906,
+  "Very Good",  12082,
+  "Premium",    13791,
+  "Ideal",      21551
+)
+ggplot(data=demo,mapping=aes(x=cut,y=freq)) + 
+  geom_col()
+```
+
+
+```{r}
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, y = after_stat(prop),group=1,fill=color))
+```
+
