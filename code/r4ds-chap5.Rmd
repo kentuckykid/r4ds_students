@@ -1,0 +1,43 @@
+---
+title: "R4ds Exercises"
+author: "Darin Stephenson"
+date: "6/3/2021"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+require("knitr")
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir=normalizePath("..")) #set working directory to the project directory
+library(conflicted)
+library(tidyverse)
+library(nycflights13)
+conflict_prefer("select", "dplyr")
+conflict_prefer("lag", "dplyr")
+conflict_prefer("filter", "dplyr")
+```
+
+```{r}
+print(dim(filter(flights,arr_delay > 120)))
+print(dim(filter(flights,dest == "IAH" | dest == "HOU")))
+print(dim(filter(flights,carrier == "AA" | carrier == "UA" | carrier == "DL")))
+print(dim(filter(flights,between(month,7,9))))
+print(dim(filter(flights,arr_delay > 120 & dep_delay <= 0)))
+print(dim(filter(flights,dep_delay >= 60 & (dep_delay-arr_delay) > 30)))
+print(dim(filter(flights,dep_time <= 600)))
+print(dim(filter(flights,is.na(dep_time))))
+print(dim(filter(flights,is.na(arr_time & !is.na(dep_time)))))
+missing_dep_time <- filter(flights,is.na(dep_time))
+missing_arr_time <- filter(flights,is.na(arr_time & !is.na(dep_time)))
+```
+
+```{r}
+arrange(flights,!is.na(dep_delay),desc(dep_delay))
+```
+
+
+
+
