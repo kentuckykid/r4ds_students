@@ -127,9 +127,30 @@ air_time = arr_time-dep_time
 ```
 
 ```{r 5.5, practice}
-transmute(flights, dep_time, air_time,
-  air_time = case_when(
-  (arr_time - dep_time) < 0 ~ ((24-dep_time) + arr_time),
-  TRUE ~  (arr_time - dep_time))
-) #IDK
+flights <- mutate(flights,
+  dep_time_min = (dep_time%/%100)*60 + dep_time%%100,
+  arr_time_min = (arr_time%/%100)*60 + arr_time%%100,
+  fly_time_min = case_when(
+            (arr_time - dep_time) < 0 ~ (arr_time_min - dep_time_min + 1440),
+            (arr_time > dep_time) ~  (arr_time_min - dep_time_min))
+) 
+select(flights, dep_time, dep_time_min, arr_time, arr_time_min, air_time, fly_time_min) #exercise 2, last two col compare air time to fly time
 ```
+
+```{r 5.5, practice}
+select(flights, dep_time, sched_dep_time, dep_delay)
+```
+
+```{r 5.5, practice}
+head(arrange(flights, min_rank(desc(flights$dep_delay))), 10)
+#exercise 4
+```
+
+```{r 5.5, practice}
+
+```
+
+
+
+
+
