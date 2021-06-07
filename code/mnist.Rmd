@@ -70,10 +70,44 @@ test$y  = as.factor(load_label_file("t10k-labels-idx1-ubyte"))
 ```
 
 
+
 ```{r}
 # view test image
-i <- 1
+i <- 500
 show_digit(train[i, ])
 print(train$y[i])
 ```
 
+
+```{r}
+library(randomForest)
+fit = randomForest(y ~ ., data = train[1:1000,])
+fit$confusion
+```
+```{r}
+train_pred = predict(fit,train[1:1000])
+test_pred = predict(fit, test)
+```
+```{r}
+print(mean(train_pred==train$y[1:1000]))
+print(mean(test_pred==test$y))
+for (i in which(test_pred!=test$y)[1:10]) {
+  show_digit(test[i, ])
+  print(test_pred[i])
+  print(test$y[i])
+  }
+```
+
+```{r confusion}
+Ctrain <- matrix(0,10,10)
+Ctest <- matrix(0,10,10)
+for (i in 1:1000){
+  Ctrain[train$y[i],train_pred[i]] <- Ctrain[train$y[i],train_pred[i]] + 1  
+}
+for (i in 1:10000){
+  Ctest[test$y[i],test_pred[i]] <- Ctest[test$y[i],test_pred[i]] + 1  
+}
+print(Ctrain)
+print(Ctest)
+print(sum(diag(Ctest))/sum(Ctest))
+```
