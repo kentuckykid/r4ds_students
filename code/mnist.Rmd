@@ -98,6 +98,12 @@ for (i in which(test_pred!=test$y)[1:10]) {
   }
 ```
 
+```{r}
+incorrect <- test_pred != test$y
+```
+
+
+
 ```{r confusion}
 Ctrain <- matrix(0,10,10)
 Ctest <- matrix(0,10,10)
