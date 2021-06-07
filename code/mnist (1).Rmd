@@ -85,4 +85,15 @@ test_pred = predict(fit,test)
 mean(test_pred == test$y)
 ```
 
+```{r}
+fit = randomForest(y ~ .,data = train[1:1000,])
+fit$confusion
+test_pred = predict(fit,test)
+mean(test_pred == test$y)
+test_pred == test$y
+which(test_pred != test$y)
+
+
+```
+
 
