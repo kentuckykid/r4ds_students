@@ -1,7 +1,7 @@
 ---
 title: "MNIST Example"
 author: "Darin Stephenson"
-date: "6/7/2021"
+date: "6/8/2021"
 output:
   pdf_document: default
   html_document:
@@ -19,6 +19,9 @@ conflict_prefer("lag", "dplyr")
 conflict_prefer("filter", "dplyr")
 ```
 
+In the next block, we load the MNIST data. I adapted the show_digit function
+to include the correct label.
+
 ```{r}
 # modification of https://gist.github.com/brendano/39760
 # automatically obtains data from the web
@@ -33,12 +36,13 @@ conflict_prefer("filter", "dplyr")
 #R.utils::gunzip("t10k-labels-idx1-ubyte.gz")#
 
 # helper function for visualization
-show_digit = function(arr784, col = gray(12:1 / 12), ...) {
+show_digit <- function(arr784, label="", col = gray(12:1 / 12), ...) {
   image(matrix(as.matrix(arr784[-785]), nrow = 28)[, 28:1], col = col, asp=1, ...)
+  title(main = paste("The correct label is:",label), font.main = 4)
 }
 
 # load image files
-load_image_file = function(filename) {
+load_image_file <- function(filename) {
   ret = list()
   f = file(filename, 'rb')
   readBin(f, 'integer', n = 1, size = 4, endian = 'big')
@@ -51,7 +55,7 @@ load_image_file = function(filename) {
 }
 
 # load label files
-load_label_file = function(filename) {
+load_label_file <- function(filename) {
   f = file(filename, 'rb')
   readBin(f, 'integer', n = 1, size = 4, endian = 'big')
   n = readBin(f, 'integer', n = 1, size = 4, endian = 'big')
@@ -61,53 +65,61 @@ load_label_file = function(filename) {
 }
 
 # load images
-train = load_image_file("train-images-idx3-ubyte")
-test  = load_image_file("t10k-images-idx3-ubyte")
+train <- load_image_file("train-images-idx3-ubyte")
+test  <- load_image_file("t10k-images-idx3-ubyte")
 
 # load labels
-train$y = as.factor(load_label_file("train-labels-idx1-ubyte"))
-test$y  = as.factor(load_label_file("t10k-labels-idx1-ubyte"))
+train$y <- as.factor(load_label_file("train-labels-idx1-ubyte"))
+test$y  <- as.factor(load_label_file("t10k-labels-idx1-ubyte"))
 ```
 
-
+Here's how we can display images and the correct labels.
 
 ```{r}
 # view test image
-i <- 500
-show_digit(train[i, ])
-print(train$y[i])
+i <- 1
+show_digit(train[i, ],train$y[i])
 ```
 
+The following code is meant to demonstrate a hyperparameter search.
 
 ```{r}
 library(randomForest)
-fit = randomForest(y ~ ., data = train[1:1000,])
-fit$confusion
+n <- 1000 # Here, n is the number of data points we are using to train.
+tree_numbers <- c(5,10,15,20,25,30,35,40,45,50,55,60,65,70,75)
+train_accuracy = c()
+test_accuracy = c()
+for (t in tree_numbers){
+  fit <- randomForest(y ~ ., data = train[1:n,],ntree=t,maxnodes=100,nodesize=1,sampsize=500)
+  train_pred <- predict(fit,train[1:n,])
+  test_pred <- predict(fit, test)
+  cat("The number of trees is ", t, "\n")
+  cat("The training accuracy is:", mean(train_pred==train$y[1:n]), "\n")
+  cat("The test accuracy is:", mean(test_pred==test$y), "\n")
+  train_accuracy <- c(train_accuracy,mean(train_pred==train$y[1:n]))
+  test_accuracy <- c(test_accuracy,mean(test_pred==test$y))
+}
 ```
+
+Let's plot the training accuracy and the test accuracy together using geom_line.
+
 ```{r}
-train_pred = predict(fit,train[1:1000])
-test_pred = predict(fit, test)
-```
-```{r}
-print(mean(train_pred==train$y[1:1000]))
-print(mean(test_pred==test$y))
-for (i in which(test_pred!=test$y)[1:10]) {
-  show_digit(test[i, ])
-  print(test_pred[i])
-  print(test$y[i])
-  }
+ggplot() +
+  geom_line(mapping=aes(x=tree_numbers,y=train_accuracy)) +
+  geom_line(mapping=aes(x=tree_numbers,y=test_accuracy)) + 
+  ylim(c(0,1))
 ```
 
 ```{r}
 incorrect <- test_pred != test$y
 ```
 
-
+The following computes some confusion matrices for the training and test sets.
 
 ```{r confusion}
 Ctrain <- matrix(0,10,10)
 Ctest <- matrix(0,10,10)
-for (i in 1:1000){
+for (i in 1:n){
   Ctrain[train$y[i],train_pred[i]] <- Ctrain[train$y[i],train_pred[i]] + 1  
 }
 for (i in 1:10000){
@@ -115,5 +127,6 @@ for (i in 1:10000){
 }
 print(Ctrain)
 print(Ctest)
+print(sum(diag(Ctrain))/sum(Ctrain))
 print(sum(diag(Ctest))/sum(Ctest))
 ```
