@@ -92,8 +92,19 @@ test_pred = predict(fit,test)
 mean(test_pred == test$y)
 test_pred == test$y
 which(test_pred != test$y)
-
+incorrect <- (test_pred != test$y)
+#for (i in which(incorrect)){
+ # show_digit(test[i, ])
+#}
 
 ```
+
+```{r}
+for(i in which(incorrect)[1:10]){
+  show_digit(test[i, ])
+  print(test_pred[i])
+}
+```
+
 
 

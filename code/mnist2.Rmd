@@ -85,19 +85,26 @@ The following code is meant to demonstrate a hyperparameter search.
 
 ```{r}
 library(randomForest)
-n <- 1000 # Here, n is the number of data points we are using to train.
-tree_numbers <- c(5,10,15,20,25,30,35,40,45,50,55,60,65,70,75)
+n <- 7000 # Here, n is the number of data points we are using to train.
+tree_numbers <- c(700,750,800,850,900,950,1000,1050,1100)
+tree_numbers2 <- c(70,75,80,85,90,95,100,105,110,115,120,125,130,135,140,145,150)
 train_accuracy = c()
 test_accuracy = c()
 for (t in tree_numbers){
-  fit <- randomForest(y ~ ., data = train[1:n,],ntree=t,maxnodes=100,nodesize=1,sampsize=500)
-  train_pred <- predict(fit,train[1:n,])
-  test_pred <- predict(fit, test)
-  cat("The number of trees is ", t, "\n")
-  cat("The training accuracy is:", mean(train_pred==train$y[1:n]), "\n")
-  cat("The test accuracy is:", mean(test_pred==test$y), "\n")
-  train_accuracy <- c(train_accuracy,mean(train_pred==train$y[1:n]))
-  test_accuracy <- c(test_accuracy,mean(test_pred==test$y))
+   cat("***********************", "\n")
+    for (s in tree_numbers2){
+         fit <- randomForest(y ~ ., data = train[1:n,],ntree=s,maxnodes=100,nodesize=10,sampsize=t, mtry=30) 
+         #~89% with ntree > 70 sampsize = 1000, nodesize = 3, mtry = 28, maxnodes = 100 - downside: slow, not sure if we could make this faster? 
+         #~90% with ntree=s(doesn't really differ with any value of ntree),maxnodes=100,nodesize=10,sampsize=900, mtry=28 : also slow, do I make it                faster with increasing nodesize?
+         train_pred <- predict(fit,train[1:n,])
+         test_pred <- predict(fit, test)
+         cat("The number of trees is ", s, "\n")
+         cat("The sampsize is ",t, "\n")
+         cat("The training accuracy is:", mean(train_pred==train$y[1:n]), "\n")
+         cat("The test accuracy is:", mean(test_pred==test$y), "\n")
+         train_accuracy <- c(train_accuracy,mean(train_pred==train$y[1:n]))
+         test_accuracy <- c(test_accuracy,mean(test_pred==test$y))
+    }
 }
 ```
 
