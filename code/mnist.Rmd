@@ -85,15 +85,20 @@ The following code is meant to demonstrate a hyperparameter search.
 
 ```{r}
 library(randomForest)
-n <- 1000 # Here, n is the number of data points we are using to train.
+n <- 2000 # Here, n is the number of data points we are using to train.
 tree_numbers <- c(5,10,15,20,25,30,35,40,45,50,55,60,65,70,75)
+node_size <- c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15)
+samp_size <- c(700,800,900,1000)
+max_nodes <- c(100,200,300,400,500,600,700)
+variables = c(5,10,15,20,25,30,35)
 train_accuracy = c()
 test_accuracy = c()
-for (t in tree_numbers){
-  fit <- randomForest(y ~ ., data = train[1:n,],ntree=t,maxnodes=100,nodesize=1,sampsize=500)
+for (n in c(60000)){
+  fit <- randomForest(y ~ ., data = train[1:n,],ntree=100,maxnodes=200,nodesize=1,
+                      sampsize=500,mtry=5)
   train_pred <- predict(fit,train[1:n,])
   test_pred <- predict(fit, test)
-  cat("The number of trees is ", t, "\n")
+  cat("The number of data points is ", n, "\n")
   cat("The training accuracy is:", mean(train_pred==train$y[1:n]), "\n")
   cat("The test accuracy is:", mean(test_pred==test$y), "\n")
   train_accuracy <- c(train_accuracy,mean(train_pred==train$y[1:n]))
@@ -105,8 +110,8 @@ Let's plot the training accuracy and the test accuracy together using geom_line.
 
 ```{r}
 ggplot() +
-  geom_line(mapping=aes(x=tree_numbers,y=train_accuracy)) +
-  geom_line(mapping=aes(x=tree_numbers,y=test_accuracy)) + 
+  geom_line(mapping=aes(x=variables,y=train_accuracy)) +
+  geom_line(mapping=aes(x=variables,y=test_accuracy)) + 
   ylim(c(0,1))
 ```
 
