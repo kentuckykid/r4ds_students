@@ -1,0 +1,155 @@
+---
+title: "R4ds Exercises"
+author: "Darin Stephenson"
+date: "6/1/2021"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+
+```{r setup, include=FALSE}
+require("knitr")
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir=normalizePath("..")) #set working directory to the project directory
+library(conflicted)
+library(tidyverse)
+conflict_prefer("select", "dplyr")
+conflict_prefer("lag", "dplyr")
+conflict_prefer("filter", "dplyr")
+```
+
+```{r Chp.7, practice}
+diamonds %>% 
+  count(cut_width(carat, 0.5))
+```
+
+```{r}
+smaller <- diamonds %>% 
+  filter(carat < 3)
+  
+ggplot(data = smaller, mapping = aes(x = carat)) +
+  geom_histogram(binwidth = 0.1)
+```
+
+```{r}
+ggplot(data = smaller, mapping = aes(x = carat, colour = cut)) +
+  geom_freqpoly(binwidth = 0.1)
+```
+
+```{r}
+ggplot(data = smaller, mapping = aes(x = carat)) +
+  geom_histogram(binwidth = 0.01)
+```
+
+```{r}
+unusual <- diamonds %>% 
+  filter(y < 3 | y > 20) %>% 
+  select(price, x, y, z) %>%
+  arrange(y)
+unusual
+
+usual <- diamonds %>%
+  filter(y>3 & y<20) %>%
+  select(price, x, y, z) %>%
+  arrange(y)
+usual
+
+ggplot(usual)+
+geom_histogram(mapping = aes(x = y), binwidth = 0.5) #histogram of data without unusual values
+```
+
+```{r}
+priceExplore <- diamonds %>% 
+  select(price, x, y, z, cut, carat, color) %>%
+  arrange(y)
+priceExplore
+
+ggplot(data = smaller, mapping = aes(x = carat, y = price, color = color)) +
+  geom_point() # compares carat and price, color sorts by the colors of the diamonds, exercise 2
+```
+
+```{r}
+#replaces unusual values with NA
+diamonds2 <- diamonds %>% 
+  mutate(y = ifelse(y < 3 | y > 20, NA, y))
+ggplot(data = diamonds2, mapping = aes(x = x, y = y)) + 
+  geom_point(na.rm = TRUE)
+#> Warning: Removed 9 rows containing missing values (geom_point).
+```
+
+```{r}
+caratfilter <- diamonds %>%
+  filter(carat == 0.99 | carat == 1) 
+
+ggplot(data = caratfilter)+
+  geom_histogram(mapping = aes(x = carat), binwidth = .01) #exercise 3
+```
+
+```{r}
+nycflights13::flights %>% 
+  mutate(
+    cancelled = is.na(dep_time),
+    sched_hour = sched_dep_time %/% 100,
+    sched_min = sched_dep_time %% 100,
+    sched_dep_time = sched_hour + sched_min / 60
+  ) %>% 
+  ggplot(mapping = aes(sched_dep_time)) + 
+    geom_freqpoly(mapping = aes(colour = cancelled), binwidth = 1/4)
+```
+
+```{r}
+nycflights13::flights %>% 
+  mutate(
+    cancelled = is.na(dep_time),
+    sched_hour = sched_dep_time %/% 100,
+    sched_min = sched_dep_time %% 100,
+    sched_dep_time = sched_hour + sched_min / 60
+  ) %>% 
+  ggplot(mapping = aes(sched_dep_time)) + 
+    geom_histogram(mapping = aes(colour = cancelled), binwidth = 1/4)
+```
+
+```{r}
+nycflights13::flights %>% 
+  mutate(
+    sched_hour = sched_dep_time %/% 100,
+    sched_min = sched_dep_time %% 100,
+    sched_dep_time = sched_hour + sched_min / 60
+  ) %>% 
+  ggplot(mapping = aes(sched_dep_time)) + 
+    geom_histogram(mapping = aes(colour = is.na(dep_time)), binwidth = 1/4) 
+```
+
+```{r}
+nycflights13::flights %>% 
+  mutate(
+    sched_hour = sched_dep_time %/% 100,
+    sched_min = sched_dep_time %% 100,
+    sched_dep_time = sched_hour + sched_min / 60
+  ) %>% 
+  ggplot(mapping = aes(sched_dep_time)) + 
+    geom_bar(mapping = aes(colour = is.na(dep_time)))
+mean(flights, dep_time)  #Exercise 1
+```
+
+```{r}
+mean(flights$dep_time, na.rm = TRUE)
+```
+
+```{r}
+sum(flights$dep_time, na.rm = TRUE)  #Exercise 2
+```
+
+
+
+
+
+
+
+
+
+
+
+
