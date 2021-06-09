@@ -13,6 +13,8 @@ output:
 require("knitr")
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_knit$set(root.dir=normalizePath("..")) #set working directory to the project directory
+library(ggstance)
+library(lvplot)
 library(conflicted)
 library(tidyverse)
 conflict_prefer("select", "dplyr")
@@ -141,6 +143,98 @@ mean(flights$dep_time, na.rm = TRUE)
 ```{r}
 sum(flights$dep_time, na.rm = TRUE)  #Exercise 2
 ```
+
+```{r}
+ggplot(data = diamonds, mapping = aes(x = price)) + 
+  geom_freqpoly(mapping = aes(colour = cut), binwidth = 500)
+```
+
+```{r}
+ggplot(diamonds) + 
+  geom_bar(mapping = aes(x = cut))
+```
+
+```{r}
+ggplot(data = diamonds, mapping = aes(x = cut, y = price)) +
+  geom_boxplot()
+```
+
+```{r}
+nycflights13::flights %>% 
+  mutate(
+    cancelled = is.na(dep_time),
+    sched_hour = sched_dep_time %/% 100,
+    sched_min = sched_dep_time %% 100,
+    sched_dep_time = sched_hour + sched_min / 60
+  ) %>% 
+  ggplot() + 
+    geom_boxplot(mapping = aes(y = sched_dep_time, x = cancelled)) #exercise 1
+```
+
+```{r}
+#Testing carat vs. price, because most diamonds are sold based on carat
+ggplot(diamonds, aes(x = carat, y = price)) +
+  geom_point()
+```
+
+```{r}
+ggplot(data = diamonds, mapping = aes(x = carat, y = price)) +
+  geom_boxplot(mapping = aes(group = cut_width(carat, 0.1)), orientation = "x") #changing width to fit well according to carat
+```
+
+```{r}
+diamonds %>%
+  mutate(color = fct_rev(color)) %>%
+  ggplot(aes(x=color, y=price)) +
+  geom_boxplot() #color vs. price: small negative relationship
+```
+
+```{r}
+diamonds %>%
+  ggplot(aes(x=clarity, y=price)) +
+  geom_boxplot() #clarity vs. price: still not as a strong relationship as carat
+```
+
+```{r}
+diamonds %>%
+  ggplot(aes(x=cut, y=carat)) +
+  geom_boxplot() #interesting that a 5 carat diamond as a fair cut, but makes sense for being able to sell at a somewhat reasonable price
+#**************** exercise 2
+```
+
+
+```{r}
+ggplot(data = mpg) +
+  geom_boxplot(mapping = aes(x = reorder(class, hwy, FUN = median), y = hwy)) +
+  coord_flip()
+```
+
+```{r}
+mpg %>%
+  ggplot() +
+  geom_boxploth(mapping = aes(y = reorder(class, hwy, FUN = median), x = hwy))
+```
+
+```{r}
+mpg %>%
+  ggplot() +
+  geom_boxploth(mapping = aes(y = reorder(class, hwy, FUN = median), x = hwy), orientation = "y") #exercise 3
+```
+
+```{r}
+diamonds %>%
+  ggplot(aes(x = cut, y = price)) + 
+  geom_lv() #is this like the spread of data? not really sure, doesn't have a ton of outlying points like the box plot though. 
+#Exercise 4 **********
+```
+
+```{r}
+
+```
+
+
+
+
 
 
 
