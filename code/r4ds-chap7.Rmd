@@ -15,6 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_knit$set(root.dir=normalizePath("..")) #set working directory to the project directory
 library(ggstance)
 library(lvplot)
+library(hexbin)
 library(conflicted)
 library(tidyverse)
 conflict_prefer("select", "dplyr")
@@ -229,7 +230,92 @@ diamonds %>%
 ```
 
 ```{r}
+#Start: 7.5.2 **********
+ggplot(data = diamonds) +
+  geom_count(mapping = aes(x = cut, y = color))
+```
 
+```{r}
+diamonds %>%
+  count(color, cut)
+#Prints the table that shows how many diamonds are under each color/cut
+```
+
+```{r}
+#Working with geom_tile
+diamonds %>%
+  count(color, cut) %>%
+  ggplot(mapping = aes(x = color, y = cut)) +
+  geom_tile(mapping = aes(fill = n))
+```
+
+```{r}
+diamonds %>%
+  count(color, cut) %>%
+  group_by(color) %>%
+  mutate(prop = n / sum(n)) %>%
+  ggplot(mapping = aes(x = color, y = cut)) +
+  geom_tile(mapping = aes(fill = prop))
+```
+
+```{r}
+ggplot(data = diamonds) +
+  geom_point(mapping = aes(x = carat, y = price))
+```
+
+```{r}
+ggplot(data = diamonds) + 
+  geom_point(mapping = aes(x = carat, y = price), alpha = 1 / 100) #adds transparency
+```
+
+
+```{r}
+ggplot(data = diamonds) +
+  geom_bin2d(mapping = aes(x = carat, y = price))
+
+ggplot(data = diamonds) +
+  geom_hex(mapping = aes(x = carat, y = price), bins=50)
+```
+
+```{r}
+ggplot(data = diamonds, mapping = aes(x = carat, y = price)) + 
+  geom_boxplot(mapping = aes(group = cut_width(carat, 0.1)))
+```
+
+```{r}
+ggplot(data = diamonds, mapping = aes(x = carat, y = price)) + 
+  geom_boxplot(mapping = aes(group = cut_number(carat, 20)))
+```
+
+```{r}
+#7.6*********
+library(modelr)
+
+mod <- lm(log(price) ~ log(carat), data = diamonds)
+
+diamonds2 <- diamonds %>% 
+  add_residuals(mod) %>% 
+  mutate(resid = exp(resid))
+
+ggplot(data = diamonds2) + 
+  geom_point(mapping = aes(x = carat, y = resid)) #removing the strong relationship between price and carat so we can explore the subtleties that remain
+#Now, we can see the relationship between cut and price:
+ggplot(data = diamonds2) + 
+  geom_boxplot(mapping = aes(x = cut, y = resid))
+#Result: relative to size, better quality diamonds (better cut) are more expensive -> Q: so "resid" is like "price"?? ******
+```
+
+ggplot(data = faithful, mapping = aes(x = eruptions))
+^
+ggplot(faithful, aes(eruptions))
+
+```{r}
+#ex:
+ggplot(data = faithful, mapping = aes(x = eruptions)) + 
+  geom_freqpoly(binwidth = 0.25)
+ggplot(faithful, aes(eruptions)) + 
+  geom_freqpoly(binwidth = 0.25)
+#They do the same thing****
 ```
 
 
