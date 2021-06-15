@@ -1,0 +1,161 @@
+---
+title: "R4ds Exercises"
+author: "Darin Stephenson"
+date: "6/1/2021"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+
+```{r setup, include=FALSE}
+require("knitr")
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir=normalizePath("..")) #set working directory to the project directory
+library(ggstance)
+library(lvplot)
+library(hexbin)
+library(conflicted)
+library(tidyverse)
+conflict_prefer("select", "dplyr")
+conflict_prefer("lag", "dplyr")
+conflict_prefer("filter", "dplyr")
+```
+
+Chapter 10 Exercises
+
+```{r}
+is_tibble(mtcars)
+#Exercise 1: mtcars is not a tribble
+```
+
+```{r}
+df <- data.frame(abc = 1, xyz = "a")
+df$x
+df[, "xyz"]
+df[, c("abc", "xyz")]
+
+tbl <- as_tibble(df)
+tbl$x
+tbl[,"xyz"]
+tbl[,c("abc", "xyz")]
+#Exercise 2
+```
+
+```{r}
+var <- "mpg"
+df[[var]]
+df$var
+```
+
+```{r}
+df <- tibble(
+  x = runif(5),
+  y = rnorm(5)
+)
+df
+
+```
+
+
+```{r}
+annoying <- tibble(
+  `1` = 1:10, #10 rows counting up to 10
+  `2` = `1` * 2 + rnorm(length(`1`)) #takes 1 multiplies it by 2
+)
+
+annoying[["1"]] #Extracts variable named 1
+annoying$`1`
+
+ggplot(annoying, aes(x = `1`, y = `2`)) +
+  geom_point() #makes a scatterplot of 1 vs. 2
+
+annoying[["3"]] <- annoying$`2` / annoying$`1`
+
+
+annoying <- rename(annoying, one = `1`, two = `2`, three = `3`)
+glimpse(annoying) #renames 1,2, and 3 as their words
+
+#annoying <- rename(annoying, one = `1`, two = `2`, three = `3`)
+#annoying
+
+```
+
+```{r}
+enframe(c(a = 1, b = 2, c = 3))
+#converts named vectors to a data frame with names and values***Exercise 5
+```
+
+Chapter 11 Exercises
+
+```{r}
+# read_csv("a,b,c
+# 1,2,3
+# 4,5,6")
+#> # A tibble: 2 x 3
+#>       a     b     c
+#>   <dbl> <dbl> <dbl>
+#> 1     1     2     3
+#> 2     4     5     6
+
+read_csv("The first line of metadata
+         The sceond line of metadata
+         x,y,z
+         1,2,3", skip = 2)
+
+read_csv("# A comment I want to skip
+         x,y,z
+         1,2,3", comment = "#")
+```
+
+```{r}
+#col_names = false
+
+read_csv("1,2,3\n4,5,6", col_names = FALSE)#\n is to add a new line, this overall tells the system to not treat the first row as heading, and instead label them sequentially from X_1 -> X_n
+```
+
+```{r}
+read_csv("1,2,3\n4,5,6", col_names = c ("x", "y", "z")) #names the cols
+read_csv("a,b,c\n1,2,.", na = ".") #replaces "." with NA
+```
+
+```{r}
+#Exercise 1: used the read_delim() function w/ delim = "|"
+intersect(names(formals(read_csv)), names(formals(read_tsv))) #E2: prints what read_csv and read_tsv have in common
+#E3: most important reads "fixed-width formats" is col_positions which tells the function where data columns begin and end. 
+
+a <- "x,y\n1,'a,b'"
+read_delim(a, ",", quote = "'") #Exercise 4
+```
+
+```{r}
+read_csv("a,b\n1,2,3\n4,5,6")
+read_csv("a,b,c\n1,2\n1,2,3,4")
+read_csv("a,b\n\"1")
+read_csv("a,b\n1,2\na,b")
+read_csv("a;b\n1;3")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
