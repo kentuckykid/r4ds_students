@@ -180,3 +180,8 @@ ggplot(data = diamonds) +
 ggplot(data = diamonds) + 
   geom_bar(mapping = aes(x = cut, y = after_stat(prop), group = 1, fill = color))
 ```
+
+```{r}
+
+```
+
