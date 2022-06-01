@@ -38,5 +38,5 @@ ggplot(data = mpg) +
 ```
 
 Continue below to learn about data visualization from Chapter 3 of R for
-Data Science. Create your own branch of the r4ds_students repository and
+Data Science. Create your own branch of the r4ds_students repository and 
 push changes on your branch to GitHub regularly (at least each day).
